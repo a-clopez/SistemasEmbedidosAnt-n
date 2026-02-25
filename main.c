@@ -84,40 +84,51 @@ void PORTDIntHandler(void) {
     }
 }
 
+void check_doors(int door1, int door2){
+    if(door1 && door2){
+        led_green_toggle();
+        led_red_toggle();
+    }
+    else{
+        if (!(GPIOE->PDOR & (1U << 29))) {
+            led_red_toggle();
+            led_green_toggle();
+        } else {
+            // nada porque xa está a led correcta posta
+        } 
+    }
+}
+
+
 
 int main(void) {
-    // Inicialización de periféricos
+
     led_green_init();
     led_red_init();
     switches_init();
-
-    /* Ensure global interrupts are enabled */
     __enable_irq();
+    int door1_close = 0; //portas abertas inicialmente (0 abertas, 1 pechadas)
+    int door2_close = 0;
+    led_green_toggle();
 
-    /* 
-     * O bucle principal xa non precisa facer nada.
-     * __WFI() pon ao procesador en modo espera ata a seguinte interrupción [35, 36].
-     */
     while (1) {
+
         if (sw1_event) {
             sw1_event = 0;
-            /* verificar estado (pull-up: 1 = released, 0 = pressed) */
-            if (!(GPIOC->PDIR & (1U << 3))) {
-                led_green_toggle();
-                short_delay(); /* debounce manejado en main */
-            }
+            door1_close = (door1_close + 1) % 2;
+            short_delay();
+            check_doors(door1_close,door2_close);
+            short_delay();
         }
 
         if (sw3_event) {
             sw3_event = 0;
-            if (!(GPIOC->PDIR & (1U << 12))) {
-                led_red_toggle();
-                short_delay();
-            }
+            door2_close = (door2_close + 1) % 2;
+            short_delay();
+            check_doors(door1_close,door2_close);
+            short_delay();
         }
-
         __WFI();
     }
-
     return 0;
 }

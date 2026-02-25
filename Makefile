@@ -1,21 +1,36 @@
-#Makefile
+## Makefile
 
-includes:= ./includes
-oocdconf:= ./openocd.cfg
+# Project paths / tools
+INCLUDES := ./includes
+OOCDCONF := ./openocd.cfg
 
-flash: main.elf
-	openocd -f $(oocdconf) -c "program main.elf verify reset exit"
+CC := arm-none-eabi-gcc
+LINKER_SCRIPT := link.ld
+MAP := main.map
+TARGET := main.elf
 
-build: main.elf
+# Sources / objects
+SOURCES := main.c startup.c
+OBJS := $(SOURCES:.c=.o)
 
-main.elf: main.o startup.o
-	arm-none-eabi-gcc -O2 -Wall -mthumb -mcpu=cortex-m0plus --specs=nano.specs -Wl,--gc-sections,-Map,main.map,-Tlink.ld main.o startup.o -o main.elf
+# Flags
+CFLAGS := -I $(INCLUDES) -O2 -Wall -mthumb -mcpu=cortex-m0plus
+LDFLAGS := -O2 -mthumb -mcpu=cortex-m0plus --specs=nano.specs -Wl,--gc-sections,-Map,$(MAP),-T$(LINKER_SCRIPT)
 
-main.o: main.c
-	arm-none-eabi-gcc -I $(includes) -O2 -Wall -mthumb -mcpu=cortex-m0plus -c -o main.o main.c
+.PHONY: all build flash clean cleanall
 
-startup.o: startup.c
-	arm-none-eabi-gcc -I $(includes) -O2 -Wall -mthumb -mcpu=cortex-m0plus -c -o startup.o startup.c
+all: $(TARGET)
+
+build: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(LDFLAGS) $^ -o $@
+
+flash: $(TARGET)
+	openocd -f $(OOCDCONF) -c "program $< verify reset exit"
 
 clean:
-	rm -f *.o *.elf
+	rm -f $(OBJS)
+
+cleanall: clean
+	rm -f $(TARGET) $(MAP)
