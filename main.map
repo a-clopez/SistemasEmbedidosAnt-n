@@ -78,7 +78,6 @@ Discarded input sections
  .ARM.attributes
                 0x00000000       0x1b /usr/lib/gcc/arm-none-eabi/13.2.1/../../../arm-none-eabi/lib/thumb/v6-m/nofp/crt0.o
  .data          0x00000000        0x0 main.o
- .bss           0x00000000        0x0 main.o
  .data          0x00000000        0x0 startup.o
  .bss           0x00000000        0x0 startup.o
  .text          0x00000000       0x48 /usr/lib/gcc/arm-none-eabi/13.2.1/../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-init.o)
@@ -436,97 +435,97 @@ LOAD /usr/lib/gcc/arm-none-eabi/13.2.1/../../../arm-none-eabi/lib/thumb/v6-m/nof
                 0x00000408        0x4 LONG 0xffffffff
                 0x0000040c        0x4 LONG 0xfffffffe
 
-.text           0x00000410      0x290
+.text           0x00000410      0x37c
  *(.text .text.* .gnu.linkonce.t.*)
- .text          0x00000410       0xcc main.o
-                0x00000410                delay
-                0x00000434                led_green_init
-                0x0000047c                led_green_toggle
-                0x00000488                led_red_init
-                0x000004cc                led_red_toggle
- .text.startup  0x000004dc       0x40 main.o
-                0x000004dc                main
- .text          0x0000051c       0x50 startup.o
-                0x0000051c                HardFaultIntHandler
-                0x0000051c                PendSVIntHandler
-                0x0000051c                SysTickIntHandler
-                0x0000051c                BusFaultIntHandler
-                0x0000051c                NMIIntHandler
-                0x0000051c                UsageFaultIntHandler
-                0x0000051c                MemManageIntHandler
-                0x0000051c                SVCIntHandler
-                0x0000051c                DebugMonIntHandler
-                0x00000520                RTCSIntHandler
-                0x00000520                FTM1IntHandler
-                0x00000520                USBOTGIntHandler
-                0x00000520                UART0SEIntHandler
-                0x00000520                UART2SEIntHandler
-                0x00000520                FTM2IntHandler
-                0x00000520                I2C1IntHandler
-                0x00000520                PORTDIntHandler
-                0x00000520                Default_ResetHandler
-                0x00000520                DMA1IntHandler
-                0x00000520                DACIntHandler
-                0x00000520                ACMPIntHandler
-                0x00000520                ResetHandler
-                0x00000520                LVDIntHandler
-                0x00000520                PORTAIntHandler
-                0x00000520                SPI1IntHandler
-                0x00000520                FTFAIntHandler
-                0x00000520                UART1SEIntHandler
-                0x00000520                ADCIntHandler
-                0x00000520                DMA0IntHandler
-                0x00000520                I2C0IntHandler
-                0x00000520                FTM0IntHandler
-                0x00000520                LLWUIntHandler
-                0x00000520                MCGIntHandler
-                0x00000520                RTCAIntHandler
-                0x00000520                SPI0IntHandler
-                0x00000520                TSIIntHandler
-                0x00000520                LPTMRIntHandler
-                0x00000520                PITIntHandler
-                0x00000520                DMA3IntHandler
-                0x00000520                DMA2IntHandler
- .text          0x0000056c       0xa8 /usr/lib/gcc/arm-none-eabi/13.2.1/../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memset.o)
-                0x0000056c                memset
- .text          0x00000614       0x8c /usr/lib/gcc/arm-none-eabi/13.2.1/../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memcpy-stub.o)
-                0x00000614                memcpy
+ .text          0x00000410      0x148 main.o
+                0x00000410                led_green_init
+                0x00000458                led_green_toggle
+                0x00000464                led_red_init
+                0x000004a8                led_red_toggle
+                0x000004b8                switches_init
+                0x00000524                PORTDIntHandler
+ .text.startup  0x00000558       0xb0 main.o
+                0x00000558                main
+ .text          0x00000608       0x50 startup.o
+                0x00000608                HardFaultIntHandler
+                0x00000608                PendSVIntHandler
+                0x00000608                SysTickIntHandler
+                0x00000608                BusFaultIntHandler
+                0x00000608                NMIIntHandler
+                0x00000608                UsageFaultIntHandler
+                0x00000608                MemManageIntHandler
+                0x00000608                SVCIntHandler
+                0x00000608                DebugMonIntHandler
+                0x0000060c                RTCSIntHandler
+                0x0000060c                FTM1IntHandler
+                0x0000060c                USBOTGIntHandler
+                0x0000060c                UART0SEIntHandler
+                0x0000060c                UART2SEIntHandler
+                0x0000060c                FTM2IntHandler
+                0x0000060c                I2C1IntHandler
+                0x0000060c                Default_ResetHandler
+                0x0000060c                DMA1IntHandler
+                0x0000060c                DACIntHandler
+                0x0000060c                ACMPIntHandler
+                0x0000060c                ResetHandler
+                0x0000060c                LVDIntHandler
+                0x0000060c                PORTAIntHandler
+                0x0000060c                SPI1IntHandler
+                0x0000060c                FTFAIntHandler
+                0x0000060c                UART1SEIntHandler
+                0x0000060c                ADCIntHandler
+                0x0000060c                DMA0IntHandler
+                0x0000060c                I2C0IntHandler
+                0x0000060c                FTM0IntHandler
+                0x0000060c                LLWUIntHandler
+                0x0000060c                MCGIntHandler
+                0x0000060c                RTCAIntHandler
+                0x0000060c                SPI0IntHandler
+                0x0000060c                TSIIntHandler
+                0x0000060c                LPTMRIntHandler
+                0x0000060c                PITIntHandler
+                0x0000060c                DMA3IntHandler
+                0x0000060c                DMA2IntHandler
+ .text          0x00000658       0xa8 /usr/lib/gcc/arm-none-eabi/13.2.1/../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memset.o)
+                0x00000658                memset
+ .text          0x00000700       0x8c /usr/lib/gcc/arm-none-eabi/13.2.1/../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memcpy-stub.o)
+                0x00000700                memcpy
  *(.glue_7t)
- .glue_7t       0x000006a0        0x0 linker stubs
+ .glue_7t       0x0000078c        0x0 linker stubs
  *(.glue_7)
- .glue_7        0x000006a0        0x0 linker stubs
+ .glue_7        0x0000078c        0x0 linker stubs
  *(.rodata .rodata* .gnu.linkonce.r.*)
 
-.vfp11_veneer   0x000006a0        0x0
- .vfp11_veneer  0x000006a0        0x0 linker stubs
+.vfp11_veneer   0x0000078c        0x0
+ .vfp11_veneer  0x0000078c        0x0 linker stubs
 
-.v4_bx          0x000006a0        0x0
- .v4_bx         0x000006a0        0x0 linker stubs
+.v4_bx          0x0000078c        0x0
+ .v4_bx         0x0000078c        0x0 linker stubs
 
-.init           0x000006a0        0x4
- .init          0x000006a0        0x4 /usr/lib/gcc/arm-none-eabi/13.2.1/thumb/v6-m/nofp/crti.o
-                0x000006a0                _init
+.init           0x0000078c        0x4
+ .init          0x0000078c        0x4 /usr/lib/gcc/arm-none-eabi/13.2.1/thumb/v6-m/nofp/crti.o
+                0x0000078c                _init
 
-.fini           0x000006a4        0x4
- .fini          0x000006a4        0x4 /usr/lib/gcc/arm-none-eabi/13.2.1/thumb/v6-m/nofp/crti.o
-                0x000006a4                _fini
+.fini           0x00000790        0x4
+ .fini          0x00000790        0x4 /usr/lib/gcc/arm-none-eabi/13.2.1/thumb/v6-m/nofp/crti.o
+                0x00000790                _fini
 
-.iplt           0x000006a8        0x0
- .iplt          0x000006a8        0x0 main.o
+.iplt           0x00000794        0x0
+ .iplt          0x00000794        0x0 main.o
 
-.rel.dyn        0x000006a8        0x0
- .rel.iplt      0x000006a8        0x0 main.o
+.rel.dyn        0x00000794        0x0
+ .rel.iplt      0x00000794        0x0 main.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
 .ARM.exidx
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-                0x000006a8                        . = ALIGN (0x4)
-                0x000006a8                        _etext = .
-                0x000006a8                        _sidata = .
+                0x00000794                        . = ALIGN (0x4)
+                0x00000794                        _etext = .
+                0x00000794                        _sidata = .
 
-.data           0x1fffe000        0x0 load address 0x000006a8
+.data           0x1fffe000        0x0 load address 0x00000794
                 0x1fffe000                        _sdata = .
  *(.data .data.*)
                 0x1fffe000                        . = ALIGN (0x4)
@@ -535,20 +534,25 @@ LOAD /usr/lib/gcc/arm-none-eabi/13.2.1/../../../arm-none-eabi/lib/thumb/v6-m/nof
 .igot.plt       0x1fffe000        0x0
  .igot.plt      0x1fffe000        0x0 main.o
 
-.bss            0x1fffe000        0x0
+.bss            0x1fffe000        0x4
                 0x1fffe000                        _sbss = .
  *(.bss .bss.*)
+ .bss           0x1fffe000        0x2 main.o
+                0x1fffe000                sw1_event
+                0x1fffe001                sw3_event
  *(COMMON)
-                0x1fffe000                        . = ALIGN (0x4)
-                0x1fffe000                        _ebss = .
+                0x1fffe004                        . = ALIGN (0x4)
+ *fill*         0x1fffe002        0x2 
+                0x1fffe004                        _ebss = .
 
-.co_stack       0x1fffe000      0x400
-                0x1fffe000                        . = ALIGN (0x8)
-                0x1fffe400                        . = (. + STACK_SIZE)
- *fill*         0x1fffe000      0x400 
-                0x1fffe400                        _start_of_stack = .
-                0x1fffe400                        . = ALIGN (0x4)
-                0x1fffe400                        _end = .
+.co_stack       0x1fffe004      0x404
+                0x1fffe008                        . = ALIGN (0x8)
+ *fill*         0x1fffe004        0x4 
+                0x1fffe408                        . = (. + STACK_SIZE)
+ *fill*         0x1fffe008      0x400 
+                0x1fffe408                        _start_of_stack = .
+                0x1fffe408                        . = ALIGN (0x4)
+                0x1fffe408                        _end = .
 LOAD main.o
 LOAD startup.o
 START GROUP
