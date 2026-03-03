@@ -32,6 +32,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#define CPU_MKL46Z256VLL4
+
 #include "fsl_device_registers.h"
 #include "fsl_debug_console.h"
 #include "board.h"

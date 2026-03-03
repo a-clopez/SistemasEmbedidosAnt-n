@@ -31,6 +31,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#define CPU_MKL46Z256VLL4
+
 #include "board.h"
 #include "fsl_gpio.h"
 
