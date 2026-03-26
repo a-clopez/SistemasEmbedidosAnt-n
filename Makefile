@@ -1,71 +1,59 @@
-## Makefile
-
-# Project paths / tools
 INCLUDES := ./includes
 DRIVERS  := ./drivers
 OOCDCONF := ./openocd.cfg
 
 CC := arm-none-eabi-gcc
-OBJCOPY := arm-none-eabi-objcopy
 LINKER_SCRIPT := link.ld
 
-TARGET_LED   := led_blinky.elf
-TARGET_HELLO := hello_world.elf
-BIN_HELLO    := includes/hello_world.bin
-MAP_LED      := led_blinky.map
-MAP_HELLO    := hello_world.map
+TARGET := reverse_practica.elf
+MAP    := reverse_practica.map
 
-# Sources / objects
-COMMON_SRCS  := startup.c \
-				includes/board.c \
-				includes/clock_config.c \
-				includes/system_MKL46Z4.c \
-				includes/pin_mux.c \
-				drivers/fsl_common.c \
-				drivers/fsl_gpio.c \
-				drivers/fsl_clock.c \
-				drivers/fsl_debug_console.c \
-				drivers/fsl_smc.c \
-				drivers/fsl_ftfx_cache.c \
-				drivers/fsl_ftfx_controller.c \
-				drivers/fsl_ftfx_flash.c \
-				drivers/fsl_log.c \
-				drivers/fsl_io.c \
-				drivers/fsl_uart.c \
-				drivers/fsl_lpsci.c \
-				drivers/fsl_str.c \
-		
-LED_SRCS     := led_blinky.c $(COMMON_SRCS)
-HELLO_SRCS   := hello_world.c $(COMMON_SRCS)
+SRCS := reverse_practica.c \
+		reverse_int_asm.s \
+		startup.c \
+		includes/board.c \
+		includes/clock_config.c \
+		includes/system_MKL46Z4.c \
+		includes/pin_mux.c \
+		drivers/fsl_common.c \
+		drivers/fsl_clock.c \
+		drivers/fsl_debug_console.c \
+		drivers/fsl_smc.c \
+		drivers/fsl_ftfx_cache.c \
+		drivers/fsl_io.c \
+		drivers/fsl_log.c \
+		drivers/fsl_lpsci.c \
+		drivers/fsl_uart.c \
+		drivers/fsl_str.c
 
-LED_OBJS     := $(LED_SRCS:.c=.o)
-HELLO_OBJS   := $(HELLO_SRCS:.c=.o)
+OBJS := $(patsubst %.c,%.o,$(filter %.c,$(SRCS))) \
+		$(patsubst %.s,%.o,$(filter %.s,$(SRCS)))
 
-# Flags
-CFLAGS  := -DCPU_MKL46Z256VLL4 -I $(INCLUDES) -I $(DRIVERS) -O2 -Wall -mthumb -mcpu=cortex-m0plus
-LDFLAGS := -O2 -mthumb -mcpu=cortex-m0plus --specs=nosys.specs -Wl,--gc-sections,-T$(LINKER_SCRIPT)
+CFLAGS       := -DCPU_MKL46Z256VLL4 -I $(INCLUDES) -I $(DRIVERS) -O2 -Wall -mthumb -mcpu=cortex-m0plus
+CFLAGS_OFAST := -DCPU_MKL46Z256VLL4 -I $(INCLUDES) -I $(DRIVERS) -Ofast -Wall -mthumb -mcpu=cortex-m0plus
+LDFLAGS      := -O2 -mthumb -mcpu=cortex-m0plus --specs=nosys.specs -Wl,--gc-sections,-T$(LINKER_SCRIPT)
 
-.PHONY: all flash_led flash_hello clean cleanall
+.PHONY: all flash clean cleanall
 
-all: $(TARGET_LED) $(TARGET_HELLO)
+all: $(TARGET)
 
-$(TARGET_LED): $(LED_OBJS)
-	$(CC) $(LDFLAGS) -Wl,-Map,$(MAP_LED) $^ -o $@
-
-$(TARGET_HELLO): $(HELLO_OBJS)
-	$(CC) $(LDFLAGS) -Wl,-Map,$(MAP_HELLO) $^ -o $@
+$(TARGET): $(OBJS)
+	$(CC) $(LDFLAGS) -Wl,-Map,$(MAP) $^ -o $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-flash_led: $(TARGET_LED)
+reverse_practica.o: reverse_practica.c
+	$(CC) $(CFLAGS_OFAST) -c $< -o $@
+
+%.o: %.s
+	$(CC) -c -mthumb -mcpu=cortex-m0plus $< -o $@
+
+flash: $(TARGET)
 	openocd -f $(OOCDCONF) -c "program $< verify reset exit"
 
-flash_hello:
-	openocd -f $(OOCDCONF) -c "program $(BIN_HELLO) 0x00000000 verify reset exit"
-
 clean:
-	rm -f $(LED_OBJS) $(HELLO_OBJS)
+	rm -f $(OBJS)
 
 cleanall: clean
-	rm -f $(TARGET_LED) $(TARGET_HELLO) $(MAP_LED) $(MAP_HELLO)
+	rm -f $(TARGET) $(MAP)

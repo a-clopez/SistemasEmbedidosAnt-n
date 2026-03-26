@@ -147,11 +147,7 @@ void Default_ResetHandler(void)
 {
   unsigned long *pulSrc, *pulDest;
 
-  // Desactivar o watchdog do xeito máis sinxelo
-  *(volatile unsigned short*)0x4005200E = 0xC520;
-  *(volatile unsigned short*)0x4005200E = 0xD928;
-  *(volatile unsigned short*)0x40052000 = 0x01D2;
-
+  /* Watchdog is configured by startup code in system files if needed. */
   /* copy the data segment initializers from flash to SRAM */
   pulSrc = &_sidata;
   for(pulDest = &_sdata; pulDest < &_edata; )
@@ -184,35 +180,35 @@ void Default_ResetHandler(void)
 #pragma weak DebugMonIntHandler = DefaultIntHandler
 #pragma weak PendSVIntHandler = DefaultIntHandler
 #pragma weak SysTickIntHandler = DefaultIntHandler
-#pragma weak DMA0IntHandler = Default_ResetHandler
-#pragma weak DMA1IntHandler = Default_ResetHandler
-#pragma weak DMA2IntHandler = Default_ResetHandler
-#pragma weak DMA3IntHandler = Default_ResetHandler
-#pragma weak FTFAIntHandler = Default_ResetHandler
-#pragma weak LVDIntHandler = Default_ResetHandler
-#pragma weak LLWUIntHandler = Default_ResetHandler
-#pragma weak I2C0IntHandler = Default_ResetHandler
-#pragma weak I2C1IntHandler = Default_ResetHandler
-#pragma weak SPI0IntHandler = Default_ResetHandler
-#pragma weak SPI1IntHandler = Default_ResetHandler
-#pragma weak UART0SEIntHandler = Default_ResetHandler
-#pragma weak UART1SEIntHandler = Default_ResetHandler
-#pragma weak UART2SEIntHandler = Default_ResetHandler
-#pragma weak ADCIntHandler = Default_ResetHandler
-#pragma weak ACMPIntHandler = Default_ResetHandler
-#pragma weak FTM0IntHandler = Default_ResetHandler
-#pragma weak FTM1IntHandler = Default_ResetHandler
-#pragma weak FTM2IntHandler = Default_ResetHandler
-#pragma weak RTCAIntHandler = Default_ResetHandler
-#pragma weak RTCSIntHandler = Default_ResetHandler
-#pragma weak PITIntHandler = Default_ResetHandler
-#pragma weak USBOTGIntHandler = Default_ResetHandler
-#pragma weak DACIntHandler = Default_ResetHandler
-#pragma weak TSIIntHandler = Default_ResetHandler
-#pragma weak MCGIntHandler = Default_ResetHandler
-#pragma weak LPTMRIntHandler = Default_ResetHandler
-#pragma weak PORTAIntHandler = Default_ResetHandler
-#pragma weak PORTDIntHandler = Default_ResetHandler
+#pragma weak DMA0IntHandler = DefaultIntHandler
+#pragma weak DMA1IntHandler = DefaultIntHandler
+#pragma weak DMA2IntHandler = DefaultIntHandler
+#pragma weak DMA3IntHandler = DefaultIntHandler
+#pragma weak FTFAIntHandler = DefaultIntHandler
+#pragma weak LVDIntHandler = DefaultIntHandler
+#pragma weak LLWUIntHandler = DefaultIntHandler
+#pragma weak I2C0IntHandler = DefaultIntHandler
+#pragma weak I2C1IntHandler = DefaultIntHandler
+#pragma weak SPI0IntHandler = DefaultIntHandler
+#pragma weak SPI1IntHandler = DefaultIntHandler
+#pragma weak UART0SEIntHandler = DefaultIntHandler
+#pragma weak UART1SEIntHandler = DefaultIntHandler
+#pragma weak UART2SEIntHandler = DefaultIntHandler
+#pragma weak ADCIntHandler = DefaultIntHandler
+#pragma weak ACMPIntHandler = DefaultIntHandler
+#pragma weak FTM0IntHandler = DefaultIntHandler
+#pragma weak FTM1IntHandler = DefaultIntHandler
+#pragma weak FTM2IntHandler = DefaultIntHandler
+#pragma weak RTCAIntHandler = DefaultIntHandler
+#pragma weak RTCSIntHandler = DefaultIntHandler
+#pragma weak PITIntHandler = DefaultIntHandler
+#pragma weak USBOTGIntHandler = DefaultIntHandler
+#pragma weak DACIntHandler = DefaultIntHandler
+#pragma weak TSIIntHandler = DefaultIntHandler
+#pragma weak MCGIntHandler = DefaultIntHandler
+#pragma weak LPTMRIntHandler = DefaultIntHandler
+#pragma weak PORTAIntHandler = DefaultIntHandler
+#pragma weak PORTDIntHandler = DefaultIntHandler
 
 //*****************************************************************************
 //! \brief This is the code that gets called when the processor receives an

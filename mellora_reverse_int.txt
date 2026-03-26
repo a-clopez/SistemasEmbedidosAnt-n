@@ -1,0 +1,24 @@
+Obxectivo
+---------
+Comparar a implementacion C clasica (32 iteracions de bucle) fronte a duas
+implementacions en ensamblador:
+1) ensamblador embebido (inline asm) en C,
+2) funcion completa en ficheiro .s.
+
+Idea de optimizacion
+--------------------
+No canto de mover un bit por iteracion durante 32 voltas, uso unha tecnica
+"parallel bit reverse" por etapas de intercambio:
+- intercambio de bits adxacentes (mascara 0x55555555),
+- intercambio por parellas (0x33333333),
+- intercambio por nibbles (0x0F0F0F0F),
+- intercambio por bytes (0x00FF00FF),
+- intercambio final de medias palabras (16 bits).
+
+Isto reduce moito o numero de operacions dependentes en cadea fronte ao bucle
+orixinal e evita a sobrecarga de control de bucle (comparacion + salto 32 veces).
+
+Xustificacion
+-------------
+- A version C base ten 32 iteracions e varias operacions por iteracion.
+- As versions ASM realizan un numero fixo de etapas (5 bloques).
