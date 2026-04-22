@@ -1,72 +1,43 @@
 ## Makefile
 
-# Project paths / tools
-INCLUDES := ./includes
+INCLUDES := ./includes ./FreeRTOS-LTS/FreeRTOS/FreeRTOS-Kernel/include ./FreeRTOS-LTS/FreeRTOS/FreeRTOS-Kernel/portable/GCC/ARM_CM0
 DRIVERS  := ./drivers
+FREERTOS := ./FreeRTOS-LTS/FreeRTOS/FreeRTOS-Kernel
 OOCDCONF := ./openocd.cfg
 
 CC := arm-none-eabi-gcc
 OBJCOPY := arm-none-eabi-objcopy
 LINKER_SCRIPT := link.ld
 
-TARGET_LED   := led_blinky.elf
-TARGET_HELLO := hello_world.elf
-BIN_HELLO    := includes/hello_world.bin
-MAP_LED      := led_blinky.map
-MAP_HELLO    := hello_world.map
+TARGET := practica4.elf
+MAP    := practica4.map
 
-# Sources / objects
 COMMON_SRCS  := startup.c \
-				includes/board.c \
-				includes/clock_config.c \
-				includes/system_MKL46Z4.c \
-				includes/pin_mux.c \
-				drivers/fsl_common.c \
-				drivers/fsl_gpio.c \
-				drivers/fsl_clock.c \
-				drivers/fsl_debug_console.c \
-				drivers/fsl_smc.c \
-				drivers/fsl_ftfx_cache.c \
-				drivers/fsl_ftfx_controller.c \
-				drivers/fsl_ftfx_flash.c \
-				drivers/fsl_log.c \
-				drivers/fsl_io.c \
-				drivers/fsl_uart.c \
-				drivers/fsl_lpsci.c \
-				drivers/fsl_str.c \
-				drivers/fsl_assert.c
-		
-LED_SRCS     := led_blinky.c $(COMMON_SRCS)
-HELLO_SRCS   := hello_world.c $(COMMON_SRCS)
+$(wildcard includes/*.c) \
+$(wildcard drivers/*.c)
 
-LED_OBJS     := $(LED_SRCS:.c=.o)
-HELLO_OBJS   := $(HELLO_SRCS:.c=.o)
+FREERTOS_SRCS := $(wildcard $(FREERTOS)/*.c) \
+ $(wildcard $(FREERTOS)/portable/GCC/ARM_CM0/*.c) \
+ $(FREERTOS)/portable/MemMang/heap_2.c
 
-# Flags
-CFLAGS  := -DCPU_MKL46Z256VLL4 -I $(INCLUDES) -I $(DRIVERS) -O2 -Wall -mthumb -mcpu=cortex-m0plus
+SRCS := practica4.c $(COMMON_SRCS) $(FREERTOS_SRCS)
+OBJS := $(SRCS:.c=.o)
+
+CFLAGS  := -DCPU_MKL46Z256VLL4 -I. -I./includes -I$(FREERTOS)/include -I$(FREERTOS)/portable/GCC/ARM_CM0 -I./drivers -O2 -Wall -mthumb -mcpu=cortex-m0plus
 LDFLAGS := -O2 -mthumb -mcpu=cortex-m0plus --specs=nosys.specs -Wl,--gc-sections,-T$(LINKER_SCRIPT)
 
-.PHONY: all flash_led flash_hello clean cleanall
+.PHONY: all flash clean
 
-all: $(TARGET_LED) $(TARGET_HELLO)
+all: $(TARGET)
 
-$(TARGET_LED): $(LED_OBJS)
-	$(CC) $(LDFLAGS) -Wl,-Map,$(MAP_LED) $^ -o $@
-
-$(TARGET_HELLO): $(HELLO_OBJS)
-	$(CC) $(LDFLAGS) -Wl,-Map,$(MAP_HELLO) $^ -o $@
+$(TARGET): $(OBJS)
+	$(CC) $(LDFLAGS) -Wl,-Map,$(MAP) $^ -o $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-flash_led: $(TARGET_LED)
-	openocd -f $(OOCDCONF) -c "program $< verify reset exit"
-
-flash_hello: $(TARGET_HELLO)
-	openocd -f $(OOCDCONF) -c "program $< verify reset exit"
+flash: $(TARGET)
+	\openocd -f $(OOCDCONF) -c "program $< verify reset exit"
 
 clean:
-	rm -f $(LED_OBJS) $(HELLO_OBJS)
-
-cleanall: clean
-	rm -f $(TARGET_LED) $(TARGET_HELLO) $(MAP_LED) $(MAP_HELLO)
+	\rm -f $(OBJS) $(TARGET) $(MAP)
