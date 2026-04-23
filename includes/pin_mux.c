@@ -15,7 +15,7 @@
  *   list of conditions and the following disclaimer in the documentation and/or
  *   other materials provided with the distribution.
  *
- * o Neither the name of Freescale Semiconductor, Inc. nor the names of its
+ * o Neither the name of the copyright holder nor the names of its
  *   contributors may be used to endorse or promote products derived from this
  *   software without specific prior written permission.
  *
@@ -38,7 +38,7 @@
 !!GlobalInfo
 product: Pins v3.0
 processor: MKL46Z256xxx4
-
+package_id: MKL46Z256VLL4
 mcu_data: ksdk2_0
 processor_version: 0.0.9
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
@@ -49,18 +49,7 @@ processor_version: 0.0.9
 #include "fsl_port.h"
 #include "pin_mux.h"
 
-/* FUNCTION ************************************************************************************************************
- *
- * Function Name : BOARD_InitBootPins
- * Description   : Calls initialization functions.
- *
- * END ****************************************************************************************************************/
-void BOARD_InitBootPins(void)
-{
-    BOARD_InitPins();
-}
 
-#define PIN29_IDX                       29u   /*!< Pin number for pin 29 in a port */
 
 /* clang-format off */
 /*
@@ -70,6 +59,9 @@ BOARD_InitPins:
 - pin_list:
   - {pin_num: '35', peripheral: UART0, signal: RX, pin_signal: TSI0_CH2/PTA1/UART0_RX/TPM2_CH0}
   - {pin_num: '36', peripheral: UART0, signal: TX, pin_signal: TSI0_CH3/PTA2/UART0_TX/TPM2_CH1}
+  - {pin_num: '62', peripheral: TSI0, signal: 'CH, 9', pin_signal: LCD_P12/TSI0_CH9/PTB16/SPI1_MOSI/UART0_RX/TPM_CLKIN0/SPI1_MISO/LCD_P12_Fault}
+  - {pin_num: '63', peripheral: TSI0, signal: 'CH, 10', pin_signal: LCD_P13/TSI0_CH10/PTB17/SPI1_MISO/UART0_TX/TPM_CLKIN1/SPI1_MOSI/LCD_P13_Fault}
+  - {pin_num: '26', peripheral: GPIOE, signal: 'GPIO, 29', pin_signal: CMP0_IN5/ADC0_SE4b/PTE29/TPM0_CH2/TPM_CLKIN0}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -84,7 +76,8 @@ void BOARD_InitPins(void)
 {
     /* Port A Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortA);
-
+    /* Port B Clock Gate Control: Clock enabled */
+    CLOCK_EnableClock(kCLOCK_PortB);
     /* Port E Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortE);
 
@@ -94,8 +87,14 @@ void BOARD_InitPins(void)
     /* PORTA2 (pin 36) is configured as UART0_TX */
     PORT_SetPinMux(PORTA, 2U, kPORT_MuxAlt2);
 
+    /* PORTB16 (pin 62) is configured as TSI0_CH9 */
+    PORT_SetPinMux(PORTB, 16U, kPORT_PinDisabledOrAnalog);
+
+    /* PORTB17 (pin 63) is configured as TSI0_CH10 */
+    PORT_SetPinMux(PORTB, 17U, kPORT_PinDisabledOrAnalog);
+
     /* PORTE29 (pin 26) is configured as PTE29 */
-    PORT_SetPinMux(PORTE, PIN29_IDX, kPORT_MuxAsGpio);
+    PORT_SetPinMux(PORTE, 29U, kPORT_MuxAsGpio);
 
     SIM->SOPT5 = ((SIM->SOPT5 &
                    /* Mask bits to zero which are setting */

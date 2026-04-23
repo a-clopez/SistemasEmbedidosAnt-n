@@ -176,7 +176,6 @@ void Default_ResetHandler(void)
 // this definition.
 //*****************************************************************************
 #pragma weak ResetHandler = Default_ResetHandler
-#pragma weak NMIIntHandler = DefaultIntHandler
 #pragma weak HardFaultIntHandler = DefaultIntHandler
 #pragma weak MemManageIntHandler = DefaultIntHandler
 #pragma weak BusFaultIntHandler = DefaultIntHandler

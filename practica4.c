@@ -46,7 +46,7 @@ static void init_buttons(void);
 int main(void)
 {
     // Inicialización do hardware
-    BOARD_InitBootPins();
+    BOARD_InitPins();
     BOARD_BootClockRUN();
     BOARD_InitDebugConsole();
     init_buttons();
