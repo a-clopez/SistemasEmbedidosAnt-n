@@ -15,9 +15,8 @@ $(wildcard includes/*.c) \
 $(wildcard drivers/*.c)
 
 SRCS := $(APP_SRCS) $(COMMON_SRCS)
-SRCS_C := $(filter %.c,$(SRCS))
-SRCS_S := $(filter %.s,$(SRCS))
-OBJS := $(SRCS_C:.c=.o) $(SRCS_S:.s=.o)
+OBJS := $(SRCS:.c=.o)
+OBJS := $(OBJS:.s=.o)
 
 CFLAGS  := -DCPU_MKL46Z256VLL4 -I. $(addprefix -I,$(INCLUDES)) -O2 -Wall -mthumb -mcpu=cortex-m0plus
 LDFLAGS := -O2 -mthumb -mcpu=cortex-m0plus --specs=nosys.specs -Wl,--gc-sections,-T$(LINKER_SCRIPT)
