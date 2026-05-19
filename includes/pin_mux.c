@@ -88,8 +88,75 @@ void BOARD_InitPins(void)
                   | SIM_SOPT5_UART0TXSRC(SOPT5_UART0TXSRC_UART_TX)
 
                   /* UART0 Receive Data Source Select: UART_RX pin. */
-                  | SIM_SOPT5_UART0RXSRC(SOPT5_UART0RXSRC_UART_RX));
+                   | SIM_SOPT5_UART0RXSRC(SOPT5_UART0RXSRC_UART_RX));
 }
+
+/* clang-format off */
+/*
+ * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+BOARD_I2C_ConfigurePins:
+- options: {coreID: core0, enableClock: 'true'}
+- pin_list:
+  - {pin_num: '31', peripheral: I2C0, signal: SCL, pin_signal: PTE24/TPM0_CH0/I2C0_SCL, slew_rate: slow, pull_select: up, pull_enable: enable}
+  - {pin_num: '32', peripheral: I2C0, signal: SDA, pin_signal: PTE25/TPM0_CH1/I2C0_SDA, slew_rate: slow, pull_select: up, pull_enable: enable}
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
+ */
+/* clang-format on */
+
+/* FUNCTION ************************************************************************************************************
+ *
+ * Function Name : BOARD_I2C_ConfigurePins
+ *
+ * END ****************************************************************************************************************/
+void BOARD_I2C_ConfigurePins(void)
+{
+    CLOCK_EnableClock(kCLOCK_PortE);
+
+    const port_pin_config_t porte24_pin31_config = {
+        kPORT_PullUp,
+        kPORT_SlowSlewRate,
+        kPORT_PassiveFilterDisable,
+        kPORT_LowDriveStrength,
+        kPORT_MuxAlt5
+    };
+    PORT_SetPinConfig(PORTE, 24U, &porte24_pin31_config);
+
+    const port_pin_config_t porte25_pin32_config = {
+        kPORT_PullUp,
+        kPORT_SlowSlewRate,
+        kPORT_PassiveFilterDisable,
+        kPORT_LowDriveStrength,
+        kPORT_MuxAlt5
+    };
+    PORT_SetPinConfig(PORTE, 25U, &porte25_pin32_config);
+}
+
+/* clang-format off */
+/*
+ * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+BOARD_InitLEDPins:
+- options: {coreID: core0, enableClock: 'true'}
+- pin_list:
+  - {pin_num: '98', peripheral: TPM0, signal: 'CH, 5', pin_signal: LCD_P45/ADC0_SE6b/PTD5/SPI1_SCK/UART2_TX/TPM0_CH5/LCD_P45_Fault}
+  - {pin_num: '26', peripheral: TPM0, signal: 'CH, 2', pin_signal: CMP0_IN5/ADC0_SE4b/PTE29/TPM0_CH2/TPM_CLKIN0}
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
+ */
+/* clang-format on */
+
+/* FUNCTION ************************************************************************************************************
+ *
+ * Function Name : BOARD_InitLEDPins
+ *
+ * END ****************************************************************************************************************/
+void BOARD_InitLEDPins(void)
+{
+    CLOCK_EnableClock(kCLOCK_PortD);
+    CLOCK_EnableClock(kCLOCK_PortE);
+
+    PORT_SetPinMux(PORTD, 5U, kPORT_MuxAlt4);
+    PORT_SetPinMux(PORTE, 29U, kPORT_MuxAlt3);
+}
+
 /***********************************************************************************************************************
  * EOF
  **********************************************************************************************************************/

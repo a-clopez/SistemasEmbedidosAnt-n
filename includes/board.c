@@ -35,12 +35,72 @@
 #include <stdint.h>
 #include "fsl_common.h"
 #include "fsl_port.h"
+#include "fsl_gpio.h"
 #include "clock_config.h"
 #include "board.h"
 #if defined(SDK_I2C_BASED_COMPONENT_USED) && SDK_I2C_BASED_COMPONENT_USED
 #include "fsl_i2c.h"
 #endif /* SDK_I2C_BASED_COMPONENT_USED */
 #include "fsl_debug_console.h"
+
+#define I2C_RELEASE_SDA_PORT    PORTE
+#define I2C_RELEASE_SCL_PORT    PORTE
+#define I2C_RELEASE_SDA_GPIO    GPIOE
+#define I2C_RELEASE_SDA_PIN     25U
+#define I2C_RELEASE_SCL_GPIO    GPIOE
+#define I2C_RELEASE_SCL_PIN     24U
+#define I2C_RELEASE_BUS_COUNT   100U
+
+static void i2c_release_bus_delay(void)
+{
+    uint32_t i = 0;
+    for (i = 0; i < I2C_RELEASE_BUS_COUNT; i++)
+    {
+        __NOP();
+    }
+}
+
+void BOARD_I2C_ReleaseBus(void)
+{
+    uint8_t i = 0;
+    gpio_pin_config_t pin_config;
+    port_pin_config_t i2c_pin_config = {0};
+
+    i2c_pin_config.pullSelect = kPORT_PullUp;
+    i2c_pin_config.mux = kPORT_MuxAsGpio;
+
+    pin_config.pinDirection = kGPIO_DigitalOutput;
+    pin_config.outputLogic = 1U;
+    CLOCK_EnableClock(kCLOCK_PortE);
+    PORT_SetPinConfig(I2C_RELEASE_SCL_PORT, I2C_RELEASE_SCL_PIN, &i2c_pin_config);
+    PORT_SetPinConfig(I2C_RELEASE_SDA_PORT, I2C_RELEASE_SDA_PIN, &i2c_pin_config);
+
+    GPIO_PinInit(I2C_RELEASE_SCL_GPIO, I2C_RELEASE_SCL_PIN, &pin_config);
+    GPIO_PinInit(I2C_RELEASE_SDA_GPIO, I2C_RELEASE_SDA_PIN, &pin_config);
+
+    GPIO_PinWrite(I2C_RELEASE_SDA_GPIO, I2C_RELEASE_SDA_PIN, 0U);
+    i2c_release_bus_delay();
+
+    for (i = 0; i < 9; i++)
+    {
+        GPIO_PinWrite(I2C_RELEASE_SCL_GPIO, I2C_RELEASE_SCL_PIN, 0U);
+        i2c_release_bus_delay();
+        GPIO_PinWrite(I2C_RELEASE_SDA_GPIO, I2C_RELEASE_SDA_PIN, 1U);
+        i2c_release_bus_delay();
+        GPIO_PinWrite(I2C_RELEASE_SCL_GPIO, I2C_RELEASE_SCL_PIN, 1U);
+        i2c_release_bus_delay();
+        i2c_release_bus_delay();
+    }
+
+    GPIO_PinWrite(I2C_RELEASE_SCL_GPIO, I2C_RELEASE_SCL_PIN, 0U);
+    i2c_release_bus_delay();
+    GPIO_PinWrite(I2C_RELEASE_SDA_GPIO, I2C_RELEASE_SDA_PIN, 0U);
+    i2c_release_bus_delay();
+    GPIO_PinWrite(I2C_RELEASE_SCL_GPIO, I2C_RELEASE_SCL_PIN, 1U);
+    i2c_release_bus_delay();
+    GPIO_PinWrite(I2C_RELEASE_SDA_GPIO, I2C_RELEASE_SDA_PIN, 1U);
+    i2c_release_bus_delay();
+}
 
 /*******************************************************************************
  * Variables
@@ -55,13 +115,7 @@ void BOARD_InitDebugConsole(void)
 {
     uint32_t uartClkSrcFreq;
 
-    /* SIM_SOPT2[27:26]:
-     *  00: Clock Disabled
-     *  01: MCGFLLCLK or MCGPLLCLK/2
-     *  10: OSCERCLK
-     *  11: MCGIRCCLK
-     */
-    CLOCK_SetLpsci0Clock(1); /* kCLOCK_PllFllSelClk. */
+    CLOCK_SetLpsci0Clock(1);
 
     uartClkSrcFreq = BOARD_DEBUG_UART_CLK_FREQ;
     DbgConsole_Init(BOARD_DEBUG_UART_BASEADDR, BOARD_DEBUG_UART_BAUDRATE, BOARD_DEBUG_UART_TYPE, uartClkSrcFreq);
@@ -84,7 +138,6 @@ status_t BOARD_I2C_Send(I2C_Type *base,
 {
     i2c_master_transfer_t masterXfer;
 
-    /* Prepare transfer structure. */
     masterXfer.slaveAddress = deviceAddress;
     masterXfer.direction = kI2C_Write;
     masterXfer.subaddress = subAddress;
@@ -105,7 +158,6 @@ status_t BOARD_I2C_Receive(I2C_Type *base,
 {
     i2c_master_transfer_t masterXfer;
 
-    /* Prepare transfer structure. */
     masterXfer.slaveAddress = deviceAddress;
     masterXfer.subaddress = subAddress;
     masterXfer.subaddressSize = subaddressSize;

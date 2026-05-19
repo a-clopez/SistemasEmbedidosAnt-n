@@ -69,6 +69,8 @@ extern "C" {
  *
  */
 void BOARD_InitPins(void);
+void BOARD_I2C_ConfigurePins(void);
+void BOARD_InitLEDPins(void);
 
 #if defined(__cplusplus)
 }
