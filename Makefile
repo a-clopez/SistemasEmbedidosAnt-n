@@ -6,12 +6,12 @@ OOCDCONF := ./openocd.cfg
 CC := arm-none-eabi-gcc
 LINKER_SCRIPT := link.ld
 
-TEST ?= practica4
+TEST ?= tutelado2
 APP_SRCS := $(TEST).c
 TARGET := $(TEST).elf
 MAP := $(TEST).map
 
-COMMON_SRCS  := startup.c crc8.c crc8_asm.s \
+COMMON_SRCS  := startup.c \
 $(wildcard includes/*.c) \
 $(wildcard drivers/*.c)
 
