@@ -46,7 +46,6 @@
 #endif
 
 #include "fsl_device_registers.h"
-#include "MKL46Z4.h" //ENGADIDO A MAIORES POR ERRO EN IRQS NON DEFINIDOS!!!!
 
 /*!
  * @addtogroup ksdk_common

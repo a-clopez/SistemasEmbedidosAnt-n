@@ -1,6 +1,5 @@
 ## Makefile
 
-# Project paths / tools
 INCLUDES := ./includes
 DRIVERS  := ./drivers
 OOCDCONF := ./openocd.cfg
@@ -11,11 +10,9 @@ LINKER_SCRIPT := link.ld
 
 TARGET_LED   := led_blinky.elf
 TARGET_HELLO := hello_world.elf
-BIN_HELLO    := includes/hello_world.bin
 MAP_LED      := led_blinky.map
 MAP_HELLO    := hello_world.map
 
-# Sources / objects
 COMMON_SRCS  := startup.c \
 				includes/board.c \
 				includes/clock_config.c \
@@ -34,6 +31,7 @@ COMMON_SRCS  := startup.c \
 				drivers/fsl_uart.c \
 				drivers/fsl_lpsci.c \
 				drivers/fsl_str.c \
+				drivers/fsl_assert.c 
 		
 LED_SRCS     := led_blinky.c $(COMMON_SRCS)
 HELLO_SRCS   := hello_world.c $(COMMON_SRCS)
@@ -41,7 +39,6 @@ HELLO_SRCS   := hello_world.c $(COMMON_SRCS)
 LED_OBJS     := $(LED_SRCS:.c=.o)
 HELLO_OBJS   := $(HELLO_SRCS:.c=.o)
 
-# Flags
 CFLAGS  := -DCPU_MKL46Z256VLL4 -I $(INCLUDES) -I $(DRIVERS) -O2 -Wall -mthumb -mcpu=cortex-m0plus
 LDFLAGS := -O2 -mthumb -mcpu=cortex-m0plus --specs=nosys.specs -Wl,--gc-sections,-T$(LINKER_SCRIPT)
 
@@ -61,8 +58,8 @@ $(TARGET_HELLO): $(HELLO_OBJS)
 flash_led: $(TARGET_LED)
 	openocd -f $(OOCDCONF) -c "program $< verify reset exit"
 
-flash_hello:
-	openocd -f $(OOCDCONF) -c "program $(BIN_HELLO) 0x00000000 verify reset exit"
+flash_hello: $(TARGET_HELLO)
+	openocd -f $(OOCDCONF) -c "program $< verify reset exit"
 
 clean:
 	rm -f $(LED_OBJS) $(HELLO_OBJS)

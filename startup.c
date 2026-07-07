@@ -143,14 +143,15 @@ void (* const g_pfnVectors[])(void) =
 //!
 //! \return None.
 //*****************************************************************************
+
+// Defined in system_MKL46Z4.c: disables watchdog
+extern void SystemInit(void);
+
 void Default_ResetHandler(void)
 {
   unsigned long *pulSrc, *pulDest;
 
-  // Desactivar o watchdog do xeito máis sinxelo
-  *(volatile unsigned short*)0x4005200E = 0xC520;
-  *(volatile unsigned short*)0x4005200E = 0xD928;
-  *(volatile unsigned short*)0x40052000 = 0x01D2;
+  SystemInit();
 
   /* copy the data segment initializers from flash to SRAM */
   pulSrc = &_sidata;
