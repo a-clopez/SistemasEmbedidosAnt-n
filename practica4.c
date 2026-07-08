@@ -138,7 +138,7 @@ static void init_buttons(void)
     EnableIRQ(PORTC_PORTD_IRQn);
 }
 
-/* ISR para PORTC/PORTD. O startup de Practica_1 chámala PORTDIntHandler. */
+/* ISR para PORTC/PORTD */
 void PORTDIntHandler(void)
 {
     uint32_t flags = GPIO_PortGetInterruptFlags(GPIOC);
@@ -267,7 +267,6 @@ static void vTaskDisplay(void *pvParameters)
     }
 }
 
-/* Hook de desbordamento de pila; para aquí se se estoura algúha tarefa. */
 void vApplicationStackOverflowHook(TaskHandle_t xTask, signed char *pcTaskName)
 {
     (void)xTask;

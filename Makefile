@@ -36,11 +36,6 @@ $(TARGET): $(OBJS)
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-%.o: %.S
-	$(CC) $(CFLAGS) -c $< -o $@
-
-%.o: %.s
-	$(CC) $(CFLAGS) -c $< -o $@
 
 flash: $(TARGET)
 	\openocd -f $(OOCDCONF) -c "program $< verify reset exit"
