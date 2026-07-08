@@ -46,25 +46,32 @@ SECTIONS
     } > TEXT
 
     . = ALIGN(4);
+    __etext = .;
     _etext = .;
     _sidata = .;
 
-    .data : AT (_etext)
+    .data : AT (__etext)
     {
+        . = ALIGN(4);
         _sdata = .;
+        __data_start__ = .;
         *(.data .data.*)
         . = ALIGN(4);
         _edata = . ;
+        __data_end__ = .;
     } > RAM
 
     /* .bss section which is used for uninitialized data */
     .bss (NOLOAD) :
     {
+        . = ALIGN(4);
         _sbss = . ;
+        __bss_start__ = .;
         *(.bss .bss.*)
         *(COMMON)
         . = ALIGN(4);
         _ebss = . ;
+        __bss_end__ = .;
     } > RAM
 
     /* stack section */
@@ -73,6 +80,7 @@ SECTIONS
         . = ALIGN(8);
         . += STACK_SIZE;
         _start_of_stack = . ;
+        __StackTop = .;
     } > RAM
 
     . = ALIGN(4);

@@ -31,9 +31,13 @@ typedef struct {
 // Handle da cola
 static QueueHandle_t xQueue;
 
-// Estado global do sistema
-static uint8_t producers_target = 1;
-static uint8_t consumers_target = 1;
+// Estado global do sistema (volatile: lido por varias tarefas)
+static volatile uint8_t producers_target = 1;
+static volatile uint8_t consumers_target = 1;
+
+// Flags de botón escritos dende a ISR (flanco de baixada)
+static volatile uint8_t g_sw1_pressed = 0;
+static volatile uint8_t g_sw3_pressed = 0;
 
 // Prototipos de tarefas e funcións
 static void vTaskProducer(void *pvParameters);
@@ -45,6 +49,9 @@ static void init_buttons(void);
 // Función principal
 int main(void)
 {
+    /* O startup non chama a SystemInit(); desactivamos o watchdog aquí. */
+    SystemInit();
+
     // Inicialización do hardware
     BOARD_InitPins();
     BOARD_BootClockRUN();
@@ -124,32 +131,50 @@ static void init_buttons(void)
     };
     GPIO_PinInit(GPIOC, 3U, &sw_config);
     GPIO_PinInit(GPIOC, 12U, &sw_config);
+
+    // Interrupción por flanco de baixada nos dous botóns
+    PORT_SetPinInterruptConfig(PORTC, 3U, kPORT_InterruptFallingEdge);
+    PORT_SetPinInterruptConfig(PORTC, 12U, kPORT_InterruptFallingEdge);
+    EnableIRQ(PORTC_PORTD_IRQn);
 }
 
-// Tarefa de control para os botóns
+/* ISR para PORTC/PORTD. O startup de Practica_1 chámala PORTDIntHandler. */
+void PORTDIntHandler(void)
+{
+    uint32_t flags = GPIO_PortGetInterruptFlags(GPIOC);
+
+    if (flags & (1U << 3U)) {
+        g_sw1_pressed = 1;
+    }
+    if (flags & (1U << 12U)) {
+        g_sw3_pressed = 1;
+    }
+
+    GPIO_PortClearInterruptFlags(GPIOC, flags);
+#if defined __CORTEX_M && (__CORTEX_M == 4U)
+    __DSB();
+#endif
+}
+
+// Tarefa de control para os botóns (lectura de flags postas pola ISR)
 static void vTaskControl(void *pvParameters)
 {
-    uint8_t sw1_prev = 1;
-    uint8_t sw3_prev = 1;
-    uint8_t sw1_curr, sw3_curr;
-
     for (;;) {
-        sw1_curr = GPIO_PinRead(GPIOC, 3U);
-        sw3_curr = GPIO_PinRead(GPIOC, 12U);
-
-        // Detectar flanco de baixada SW1 -> +1 Produtor
-        if (sw1_prev == 1 && sw1_curr == 0) {
+        if (g_sw1_pressed) {
+            g_sw1_pressed = 0;
             producers_target = (producers_target + 1) % (MAX_TASKS + 1);
             PRINTF("=> Boton SW1: Produtores=%d, Consumidores=%d\r\n", producers_target, consumers_target);
-        }
-        // Detectar flanco de baixada SW3 -> +1 Consumidor
-        if (sw3_prev == 1 && sw3_curr == 0) {
-            consumers_target = (consumers_target + 1) % (MAX_TASKS + 1);
-            PRINTF("=> Boton SW3: Produtores=%d, Consumidores=%d\r\n", producers_target, consumers_target);
+            /* Anti-rebote simple: ignorar novas pulsacións durante 200 ms. */
+            vTaskDelay(pdMS_TO_TICKS(200));
         }
 
-        sw1_prev = sw1_curr;
-        sw3_prev = sw3_curr;
+        if (g_sw3_pressed) {
+            g_sw3_pressed = 0;
+            consumers_target = (consumers_target + 1) % (MAX_TASKS + 1);
+            PRINTF("=> Boton SW3: Produtores=%d, Consumidores=%d\r\n", producers_target, consumers_target);
+            vTaskDelay(pdMS_TO_TICKS(200));
+        }
+
         vTaskDelay(pdMS_TO_TICKS(CONTROL_DELAY_MS));
     }
 }
@@ -158,7 +183,7 @@ static void vTaskControl(void *pvParameters)
 static void vTaskProducer(void *pvParameters)
 {
     uint32_t taskId = (uint32_t)pvParameters;
-    static uint32_t messageId = 0;
+    uint32_t messageId = 0;
     Message_t message;
     BaseType_t xStatus;
 
@@ -240,4 +265,13 @@ static void vTaskDisplay(void *pvParameters)
         
         vTaskDelay(pdMS_TO_TICKS(100));
     }
+}
+
+/* Hook de desbordamento de pila; para aquí se se estoura algúha tarefa. */
+void vApplicationStackOverflowHook(TaskHandle_t xTask, signed char *pcTaskName)
+{
+    (void)xTask;
+    (void)pcTaskName;
+    taskDISABLE_INTERRUPTS();
+    for (;;);
 }
